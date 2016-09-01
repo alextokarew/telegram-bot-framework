@@ -37,6 +37,25 @@ object Protocol {
     )
 
     /**
+      * This object represents an incoming callback query from a callback button in an inline keyboard. If the button
+      * that originated the query was attached to a message sent by the bot, the field message will be presented.
+      * If the button was attached to a message sent via the bot (in inline mode), the field inline_message_id
+      * will be presented.
+      * @param id Unique identifier for this query
+      * @param from Sender
+      * @param message Optional. Message with the callback button that originated the query. Note that message content and message date will not be available if the message is too old
+      * @param inline_message_id Identifier of the message sent via the bot in inline mode, that originated the query
+      * @param data Data associated with the callback button. Be aware that a bad client can send arbitrary data in this field
+      */
+    case class CallbackQuery(
+      id: String,
+      from: User,
+      message: Option[Message],
+      inline_message_id: Option[String],
+      data: String
+    )
+
+    /**
       * This object represents a chat.
       * @param id Unique identifier for this chat. This number may be greater than 32 bits and some programming
       *           languages may have difficulty/silent defects in interpreting it. But it smaller than 52 bits,
@@ -54,6 +73,24 @@ object Protocol {
       username: Option[String],
       first_name: Option[String],
       last_name: Option[String]
+    )
+
+    /**
+      * Represents a result of an inline query that was chosen by the user and sent to their chat partner.
+      * @param result_id The unique identifier for the result that was chosen
+      * @param from The user that chose the result
+      * @param location Sender location, only for bots that require user location
+      * @param inline_message_id Identifier of the sent inline message. Available only if there is an inline keyboard
+      *                          attached to the message. Will be also received in callback queries and can be used to
+      *                          edit the message.
+      * @param query The query that was used to obtain the result
+      */
+    case class ChosenInlineResult(
+      result_id: String,
+      from:	User,
+      location: Option[Location],
+      inline_message_id: Option[String],
+      query:	String
     )
 
     /**
@@ -84,6 +121,23 @@ object Protocol {
       file_name: Option[String],
       mime_type: Option[String],
       file_size: Option[Int]
+    )
+
+    /**
+      * This object represents an incoming inline query. When the user sends an empty query, your bot could return
+      * some default or trending results.
+      * @param id Unique identifier for this query
+      * @param from Sender
+      * @param location Sender location, only for bots that request user location
+      * @param query Text of the query (up to 512 characters)
+      * @param offset Offset of the results to be returned, can be controlled by the bot
+      */
+    case class InlineQuery(
+      id: String,
+      from: User,
+      location: Option[Location],
+      query: String,
+      offset: String
     )
 
     /**
