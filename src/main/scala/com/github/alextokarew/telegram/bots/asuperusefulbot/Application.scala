@@ -7,7 +7,7 @@ import akka.http.scaladsl.model.{HttpRequest, HttpResponse}
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.ActorMaterializer
 import com.github.alextokarew.telegram.bots.messages.Protocol
-import com.github.alextokarew.telegram.bots.messages.Protocol.Responses.GetMe
+import com.github.alextokarew.telegram.bots.messages.Protocol.Responses.OkWrapper
 import com.typesafe.config.ConfigFactory
 import spray.json.DefaultJsonProtocol
 
@@ -27,7 +27,7 @@ object Application extends App with Protocol {
 
   Http().singleRequest(HttpRequest(uri = getMeUrl)).onSuccess {
     case HttpResponse(_, _, entity, _) =>
-      Unmarshal(entity).to[GetMe].onSuccess {
+      Unmarshal(entity).to[OkWrapper].onSuccess {
         case r => println(r)
       }
   }
