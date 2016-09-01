@@ -126,7 +126,23 @@ object Protocol {
       pinned_message: Option[Message]
     )
 
-    case class MessageEntity()
+    /**
+      * This object represents one special entity in a text message. For example, hashtags, usernames, URLs, etc.
+      * @param `type` Type of the entity. Can be mention (@username), hashtag, bot_command, url, email,
+      *               bold (bold text), italic (italic text), code (monowidth string), pre (monowidth block),
+      *               text_link (for clickable text URLs), text_mention (for users without usernames)
+      * @param offset Offset in UTF-16 code units to the start of the entity
+      * @param length Length of the entity in UTF-16 code units
+      * @param url For “text_link” only, url that will be opened after user taps on the text
+      * @param user For “text_mention” only, the mentioned user
+      */
+    case class MessageEntity(
+      `type`:String,
+      offset: Int,
+      length: Int,
+      url:	Option[String],
+      user: Option[User]
+    )
 
     /**
       * This object represents an incoming update.
@@ -151,6 +167,13 @@ object Protocol {
       callback_query: Option[CallbackQuery]
     )
 
+    /**
+      * This object represents a Telegram user or bot.
+      * @param id Unique identifier for this user or bot
+      * @param first_name User‘s or bot’s first name
+      * @param last_name User‘s or bot’s last name
+      * @param username User‘s or bot’s username
+      */
     case class User(
       id: Long,
       first_name: String,
