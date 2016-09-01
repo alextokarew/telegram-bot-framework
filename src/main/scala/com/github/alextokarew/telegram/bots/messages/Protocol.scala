@@ -19,6 +19,24 @@ object Protocol {
     case class OkWrapper(ok: Boolean, result: User)
 
     /**
+      * This object represents an audio file to be treated as music by the Telegram clients.
+      * @param file_id Unique identifier for this file
+      * @param duration Duration of the audio in seconds as defined by sender
+      * @param performer Performer of the audio as defined by sender or by audio tags
+      * @param title Title of the audio as defined by sender or by audio tags
+      * @param mime_type MIME type of the file as defined by sender
+      * @param file_size File size
+      */
+    case class Audio(
+      file_id: String,
+      duration: Int,
+      performer: Option[String],
+      title: Option[String],
+      mime_type: Option[String],
+      file_size: Option[Int]
+    )
+
+    /**
       * This object represents a chat.
       * @param id Unique identifier for this chat. This number may be greater than 32 bits and some programming
       *           languages may have difficulty/silent defects in interpreting it. But it smaller than 52 bits,
@@ -36,6 +54,46 @@ object Protocol {
       username: Option[String],
       first_name: Option[String],
       last_name: Option[String]
+    )
+
+    /**
+      * This object represents a phone contact.
+      * @param phone_number Contact's phone number
+      * @param first_name Contact's first name
+      * @param last_name Contact's last name
+      * @param user_id Contact's user identifier in Telegram
+      */
+    case class Contact(
+      phone_number:	String,
+      first_name:	String,
+      last_name: Option[String],
+      user_id: Option[Long]
+    )
+
+    /**
+      * This object represents a general file (as opposed to photos, voice messages and audio files).
+      * @param file_id Unique file identifier
+      * @param thumb Document thumbnail as defined by sender
+      * @param file_name Original filename as defined by sender
+      * @param mime_type MIME type of the file as defined by sender
+      * @param file_size File size
+      */
+    case class Document(
+      file_id: String,
+      thumb: Option[PhotoSize],
+      file_name: Option[String],
+      mime_type: Option[String],
+      file_size: Option[Int]
+    )
+
+    /**
+      * This object represents a point on the map.
+      * @param longitude Longitude as defined by sender
+      * @param latitude Latitude as defined by sender
+      */
+    case class Location(
+      longitude: Double,
+      latitude: Double
     )
 
     /**
@@ -145,6 +203,38 @@ object Protocol {
     )
 
     /**
+      * This object represents one size of a photo or a file / sticker thumbnail.
+      * @param file_id Unique identifier for this file
+      * @param width Photo width
+      * @param height Photo height
+      * @param file_size File size
+      */
+    case class PhotoSize(
+      file_id: String,
+      width: Int,
+      height: Int,
+      file_size: Option[Int]
+    )
+
+    /**
+      * This object represents a sticker.
+      * @param file_id Unique identifier for this file
+      * @param width Sticker width
+      * @param height Sticker height
+      * @param thumb Sticker thumbnail in .webp or .jpg format
+      * @param emoji Emoji associated with the sticker
+      * @param file_size File size
+      */
+    case class Sticker(
+      file_id: String,
+      width: Int,
+      height: Int,
+      thumb: Option[PhotoSize],
+      emoji: Option[String],
+      file_size: Option[Integer]
+    )
+
+    /**
       * This object represents an incoming update.
       * Only one of the optional parameters can be present in any given update.
       * @param update_id The update‘s unique identifier. Update identifiers start from a certain positive number and
@@ -179,6 +269,64 @@ object Protocol {
       first_name: String,
       last_name: Option[String],
       username: Option[String]
+    )
+
+    /**
+      * This object represent a user's profile pictures.
+      * @param total_count Total number of profile pictures the target user has
+      * @param photos Requested profile pictures (in up to 4 sizes each)
+      */
+    case class UserProfilePhotos(
+      total_count: Int,
+      photos: Seq[PhotoSize]
+    )
+
+    /**
+      * This object represents a venue.
+      * @param location Venue location
+      * @param title Name of the venue
+      * @param address Address of the venue
+      * @param foursquare_id Foursquare identifier of the venue
+      */
+    case class Venue(
+      location: Location,
+      title: String,
+      address: String,
+      foursquare_id: Option[String]
+    )
+
+    /**
+      * This object represents a video file.
+      * @param file_id Unique identifier for this file
+      * @param width Video width as defined by sender
+      * @param height Video height as defined by sender
+      * @param duration Duration of the video in seconds as defined by sender
+      * @param thumb Mime type of a file as defined by sender
+      * @param mime_type Video thumbnail
+      * @param file_size File size
+      */
+    case class Video(
+      file_id: String,
+      width: Int,
+      height: Int,
+      duration: Int,
+      thumb: Option[PhotoSize],
+      mime_type: Option[String],
+      file_size: Option[Int]
+    )
+
+    /**
+      * This object represents a voice note.
+      * @param file_id Unique identifier for this file
+      * @param duration Duration of the audio in seconds as defined by sender
+      * @param mime_type MIME type of the file as defined by sender
+      * @param file_size File size
+      */
+    case class Voice(
+      file_id: String,
+      duration: Int,
+      mime_type: Option[String],
+      file_size: Option[Int]
     )
   }
 }
