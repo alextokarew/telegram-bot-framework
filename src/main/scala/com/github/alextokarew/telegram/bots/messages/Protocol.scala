@@ -1,22 +1,107 @@
 package com.github.alextokarew.telegram.bots.messages
 
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
-import com.github.alextokarew.telegram.bots.messages.Protocol.Responses.{OkWrapper, User}
-import spray.json.DefaultJsonProtocol
+import spray.json.{DefaultJsonProtocol, JsObject, JsValue, JsonFormat, RootJsonFormat}
 
 /**
   * Created by alextokarew on 30.08.16.
   */
 trait Protocol extends SprayJsonSupport with DefaultJsonProtocol {
-  implicit val userFormat = jsonFormat4(User)
-  implicit val okWrapperFormat = jsonFormat2(OkWrapper)
+  import Protocol.Responses._
 
+  implicit val audioFormat = jsonFormat6(Audio)
+  implicit val chatFormat = jsonFormat6(Chat)
+  implicit val contactFormat = jsonFormat4(Contact)
+  implicit val locationFormat = jsonFormat2(Location)
+  implicit val photoSizeFormat = jsonFormat4(PhotoSize)
+  implicit val documentFormat = jsonFormat5(Document)
+  implicit val stickerFormat = jsonFormat6(Sticker)
+  implicit val userFormat = jsonFormat4(User)
+  implicit val messageEntityFormat = jsonFormat5(MessageEntity)
+  implicit val inlineQueryFormat = jsonFormat5(InlineQuery)
+  implicit val userProfilePhotosFormat = jsonFormat2(UserProfilePhotos)
+  implicit val venueFormat = jsonFormat4(Venue)
+  implicit val videoFormat = jsonFormat7(Video)
+  implicit val voiceFormat = jsonFormat4(Voice)
+
+  /**
+    * Explicitly defining JsonFormat for Message case class because it has more than 22 arguments
+    */
+  implicit val messageFormat = new RootJsonFormat[Message] {
+    lazy val reader = new MessageReader
+
+    def write(obj: Message): JsValue =
+      throw new UnsupportedOperationException("Case class Message can't be serialized to JSON")
+
+    def read(json: JsValue): Message = reader.read(json)
+  }
+
+  private[Protocol] class MessageReader {
+    val fieldNames = extractFieldNames(classManifest[Message])
+
+    private def forField[T: JsonFormat](v: JsValue, pos: Int): T =
+      fromField(v, fieldNames(pos))(implicitly[JsonFormat[T]])
+
+    def read(value: JsValue): Message = Message(
+      forField[Long](value, 0),
+      forField[Option[User]](value, 1),
+      forField[Long](value, 2),
+      forField[Chat](value, 3),
+      forField[Option[User]](value, 4),
+      forField[Option[Chat]](value, 5),
+      forField[Option[Long]](value, 6),
+      forField[Option[Message]](value, 7),
+      forField[Option[Long]](value, 8),
+      forField[Option[String]](value, 9),
+      forField[Option[Seq[MessageEntity]]](value, 10),
+      forField[Option[Audio]](value, 11),
+      forField[Option[Document]](value, 12),
+      forField[Option[Seq[PhotoSize]]](value, 13),
+      forField[Option[Sticker]](value, 14),
+      forField[Option[Video]](value, 15),
+      forField[Option[Voice]](value, 16),
+      forField[Option[String]](value, 17),
+      forField[Option[Contact]](value, 18),
+      forField[Option[Location]](value, 19),
+      forField[Option[Venue]](value, 20),
+      forField[Option[User]](value, 21),
+      forField[Option[User]](value, 22),
+      forField[Option[String]](value, 23),
+      forField[Option[Seq[PhotoSize]]](value, 24),
+      forField[Option[Boolean]](value, 25),
+      forField[Option[Boolean]](value, 26),
+      forField[Option[Boolean]](value, 27),
+      forField[Option[Boolean]](value, 28),
+      forField[Option[Long]](value, 29),
+      forField[Option[Long]](value, 30),
+      forField[Option[Message]](value, 31)
+    )
+  }
+
+  implicit val callbackQueryFormat = jsonFormat5(CallbackQuery)
+  implicit val chosenInlineResultFormat = jsonFormat5(ChosenInlineResult)
+  implicit val updateFormat = jsonFormat6(Update)
+
+  /**
+    * Explicitly defining JsonFormat for OkWrapper because it has type parameter.
+    */
+  implicit def okWrapperFormat[T : JsonFormat] = new OkWrapperFormat[T]
+
+  private[Protocol] class OkWrapperFormat[T : JsonFormat] extends RootJsonFormat[OkWrapper[T]] {
+    override def write(obj: OkWrapper[T]): JsValue =
+      throw new UnsupportedOperationException("Case class OkWrapper can't be serialized to JSON")
+
+    override def read(value: JsValue): OkWrapper[T] = OkWrapper[T](
+      fromField[Boolean](value, "ok"),
+      fromField[T](value, "result")
+    )
+  }
 }
 
 object Protocol {
   object Responses {
 
-    case class OkWrapper(ok: Boolean, result: User)
+    case class OkWrapper[T : JsonFormat](ok: Boolean, result: T)
 
     /**
       * This object represents an audio file to be treated as music by the Telegram clients.
@@ -285,7 +370,7 @@ object Protocol {
       height: Int,
       thumb: Option[PhotoSize],
       emoji: Option[String],
-      file_size: Option[Integer]
+      file_size: Option[Int]
     )
 
     /**

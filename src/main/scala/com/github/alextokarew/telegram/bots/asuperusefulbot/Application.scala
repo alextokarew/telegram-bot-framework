@@ -7,7 +7,7 @@ import akka.http.scaladsl.model.{HttpRequest, HttpResponse}
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.ActorMaterializer
 import com.github.alextokarew.telegram.bots.messages.Protocol
-import com.github.alextokarew.telegram.bots.messages.Protocol.Responses.OkWrapper
+import com.github.alextokarew.telegram.bots.messages.Protocol.Responses.{OkWrapper, Update}
 import com.typesafe.config.ConfigFactory
 import spray.json.DefaultJsonProtocol
 
@@ -23,12 +23,13 @@ object Application extends App with Protocol {
 
   val config = ConfigFactory.load()
   val token = config.getString("telegram.bot.token")
-  val getMeUrl = config.getString("telegram.bot.url").replace("<token>", token)
+  val url = config.getString("telegram.bot.url").replace("<token>", token)
 
-  Http().singleRequest(HttpRequest(uri = getMeUrl)).onSuccess {
+  Http().singleRequest(HttpRequest(uri = s"$url/getUpdates")).onSuccess {
     case HttpResponse(_, _, entity, _) =>
-      Unmarshal(entity).to[OkWrapper].onSuccess {
-        case r => println(r)
+      println(entity)
+      Unmarshal(entity).to[OkWrapper[Seq[Update]]].onSuccess {
+        case r => println(r.result)
       }
   }
 
