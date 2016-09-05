@@ -1,7 +1,7 @@
-package com.github.alextokarew.telegram.bots.messages
+package com.github.alextokarew.telegram.bots.domain
 
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
-import spray.json.{DefaultJsonProtocol, JsObject, JsValue, JsonFormat, RootJsonFormat}
+import spray.json.{DefaultJsonProtocol, JsValue, JsonFormat, RootJsonFormat}
 
 /**
   * Created by alextokarew on 30.08.16.

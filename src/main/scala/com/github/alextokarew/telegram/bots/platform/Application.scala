@@ -1,15 +1,13 @@
-package com.github.alextokarew.telegram.bots.asuperusefulbot
+package com.github.alextokarew.telegram.bots.platform
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
-import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.model.{HttpRequest, HttpResponse}
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.ActorMaterializer
-import com.github.alextokarew.telegram.bots.messages.Protocol
-import com.github.alextokarew.telegram.bots.messages.Protocol.Responses.{OkWrapper, Update}
+import com.github.alextokarew.telegram.bots.domain.Protocol
+import com.github.alextokarew.telegram.bots.domain.Protocol.Responses.{OkWrapper, Update}
 import com.typesafe.config.ConfigFactory
-import spray.json.DefaultJsonProtocol
 
 /**
   * Created by alextokarew on 30.08.16.
