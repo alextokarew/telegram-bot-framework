@@ -1,6 +1,6 @@
 organization := "com.github.alextokarew.telegram.bots"
 
-name := "asuperusefulbot"
+name := "telegram-bot-framework"
 
 version := "1.0.0-SNAPSHOT"
 
