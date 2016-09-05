@@ -9,6 +9,8 @@ TODO:
 * A trait as a framework for responses. The trait may be embedded in the Processor actor. Or, this can even be a Java interface (??? this is scala, why bither with java?)
 * Responder actor
 * Inline updates
+* Logging via slf4j
+* README.md
 
 Architecture:
 
