@@ -23,7 +23,6 @@ class Poller(url: String, timeout: Int, router: ActorRef) extends Actor with Pro
 
   @scala.throws[Exception](classOf[Exception])
   override def preStart(): Unit = {
-
     self ! Poll
   }
 
