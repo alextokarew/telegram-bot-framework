@@ -15,13 +15,7 @@ class Responder(chatId: Long) extends Actor {
 
   override def receive: Receive = {
     case Text(text) =>
-
-      val response = if("пробки".equalsIgnoreCase(text))
-        "Стоит прям как в мои лучшие годы!"
-      else
-        s"$text-хуе$text"
-
-      val uri = Uri(s"$url/sendMessage").withQuery(Uri.Query("chat_id" -> chatId.toString, "text" -> response))
+      val uri = Uri(s"$url/sendMessage").withQuery(Uri.Query("chat_id" -> chatId.toString, "text" -> text))
       http.singleRequest(HttpRequest(uri = uri))
   }
 

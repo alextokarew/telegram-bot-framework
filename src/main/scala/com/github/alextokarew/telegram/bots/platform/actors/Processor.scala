@@ -12,7 +12,13 @@ class Processor(chat: Chat) extends Actor {
 
   override def receive: Receive = {
     case m: Message =>
-      responder ! Responder.Text(m.text.get)
+      m.text.foreach {text =>
+        val response = if("пробки".equalsIgnoreCase(text))
+          "Стоит прям как в мои лучшие годы!"
+        else
+          s"$text-хуе$text"
+        responder ! Responder.Text(response)
+      }
   }
 }
 
