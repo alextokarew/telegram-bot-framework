@@ -21,6 +21,22 @@ class Poller(url: String, timeout: Int, router: ActorRef) extends Actor with Pro
 
   val http = Http(context.system)
 
+  //TODO:
+  //  val connectionFlow: Flow[HttpRequest, HttpResponse, Future[Http.OutgoingConnection]] =
+//    Http().outgoingConnection("akka.io")
+//  val responseFuture: Future[HttpResponse] =
+//    Source.single(HttpRequest(uri = "/"))
+//      .via(connectionFlow)
+//      .runWith(Sink.head)
+//
+//  responseFuture.andThen {
+//    case Success(_) => println("request succeded")
+//    case Failure(_) => println("request failed")
+//  }.andThen {
+//    case _ => system.terminate()
+//  }
+
+
   @scala.throws[Exception](classOf[Exception])
   override def preStart(): Unit = {
     self ! Poll

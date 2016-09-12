@@ -1,7 +1,6 @@
 package com.github.alextokarew.telegram.bots.platform
 
 import akka.actor.{ActorSystem, Props}
-import akka.stream.ActorMaterializer
 import com.github.alextokarew.telegram.bots.domain.Protocol
 import com.github.alextokarew.telegram.bots.platform.actors.{Poller, Printer, Router}
 import com.typesafe.config.ConfigFactory
@@ -14,7 +13,6 @@ object Application extends App with Protocol {
 
   implicit val system = ActorSystem("asuperusefulbot")
   implicit val executor = system.dispatcher
-  implicit val materializer = ActorMaterializer()
 
   val config = ConfigFactory.load()
   val token = config.getString("telegram.bot.token")
