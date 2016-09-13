@@ -1,0 +1,18 @@
+{
+  "request": {
+    "urlPath": "/botToken/getUpdates",
+    "method": "GET",
+    "queryParameters" : {
+      "offset" : {
+        "equalTo" : "219169025"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {"ok":true,"result":[]}
+  }
+}

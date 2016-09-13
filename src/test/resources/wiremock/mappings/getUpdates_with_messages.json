@@ -1,0 +1,22 @@
+{
+  "request": {
+    "urlPath": "/botToken/getUpdates",
+    "method": "GET",
+    "queryParameters" : {
+      "offset" : {
+        "equalTo" : "0"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {"ok":true,"result":[{"update_id":219169021,
+      "message":{"message_id":14,"from":{"id":123451837,"first_name":"Alice","last_name":"Cooper","username":"alicecooper"},"chat":{"id":123451837,"first_name":"Alice","last_name":"Cooper","username":"alicecooper","type":"private"},"date":1472827793,"text":"Hello"}},{"update_id":219169022,
+      "message":{"message_id":15,"from":{"id":123451837,"first_name":"Alice","last_name":"Cooper","username":"alicecooper"},"chat":{"id":123451837,"first_name":"Alice","last_name":"Cooper","username":"alicecooper","type":"private"},"date":1472827800,"text":"Hello again"}},{"update_id":219169023,
+      "message":{"message_id":16,"from":{"id":123451837,"first_name":"Alice","last_name":"Cooper","username":"alicecooper"},"chat":{"id":123451837,"first_name":"Alice","last_name":"Cooper","username":"alicecooper","type":"private"},"date":1472827809,"text":"\/command","entities":[{"type":"bot_command","offset":0,"length":8}]}},{"update_id":219169024,
+      "message":{"message_id":17,"from":{"id":123451837,"first_name":"Alice","last_name":"Cooper","username":"alicecooper"},"chat":{"id":123451837,"first_name":"Alice","last_name":"Cooper","username":"alicecooper","type":"private"},"date":1472827819,"text":"\/command with argument","entities":[{"type":"bot_command","offset":0,"length":8}]}}]}
+  }
+}

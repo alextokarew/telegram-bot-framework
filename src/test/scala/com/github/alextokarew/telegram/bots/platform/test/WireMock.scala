@@ -5,11 +5,14 @@ import com.github.tomakehurst.wiremock.core.WireMockConfiguration._
 import org.scalatest.{BeforeAndAfterAll, Suite}
 
 /**
-  * Created by alextokarev on 08.09.16.
+  * Mixes in wireMock stub server.
   */
 trait WireMock extends BeforeAndAfterAll { this: Suite =>
 
-  val wireMockServer = new WireMockServer(options().port(8089))
+  val wireMockServer = new WireMockServer(options()
+    .port(8089)
+    .usingFilesUnderClasspath("wiremock")
+  )
 
   override def beforeAll(): Unit = {
     super.beforeAll()
@@ -20,4 +23,6 @@ trait WireMock extends BeforeAndAfterAll { this: Suite =>
     super.afterAll()
     wireMockServer.stop()
   }
+
+  def url = s"http://localhost:${wireMockServer.port()}/botToken"
 }
