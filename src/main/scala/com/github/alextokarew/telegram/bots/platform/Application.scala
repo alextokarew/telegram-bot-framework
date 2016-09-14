@@ -25,7 +25,7 @@ object Application extends App with Protocol {
 
   val printer = system.actorOf(Props[Printer])
   val router = system.actorOf(Router.props())
-  val poller = system.actorOf(Poller.props(url, timeout, router))
+  val poller = system.actorOf(Poller.props(url, timeout, router, apiConnector))
 
   sys.addShutdownHook {
     system.terminate()

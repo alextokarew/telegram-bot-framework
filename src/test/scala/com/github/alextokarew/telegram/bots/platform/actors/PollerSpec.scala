@@ -1,8 +1,10 @@
 package com.github.alextokarew.telegram.bots.platform.actors
 
 import akka.actor.ActorSystem
+import akka.stream.ActorMaterializer
 import akka.testkit.TestKit
 import com.github.alextokarew.telegram.bots.domain.Protocol.Responses.Update
+import com.github.alextokarew.telegram.bots.platform.TelegramApiConnector
 import com.github.alextokarew.telegram.bots.platform.test.WireMock
 import com.github.tomakehurst.wiremock.client.{WireMock => WM}
 import org.scalatest.{Matchers, WordSpecLike}
@@ -15,7 +17,9 @@ class PollerSpec extends TestKit(ActorSystem("PollerSpec")) with WordSpecLike wi
 
   "Poller" should {
     "poll getUpdates method" in {
-      val poller = system.actorOf(Poller.props(url, timeout, testActor))
+      implicit val materializer = ActorMaterializer()
+      val apiConnector = new TelegramApiConnector("localhost", wireMockServer.port())
+      val poller = system.actorOf(Poller.props("/botToken", timeout, testActor, apiConnector))
 
       val messages = receiveWhile(messages = 4) {
         case u: Update => u

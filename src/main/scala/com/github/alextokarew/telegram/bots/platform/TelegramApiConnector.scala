@@ -9,7 +9,7 @@ import com.typesafe.config.Config
   * Wraps an HTTP connection pool to the telegram API.
   */
 class TelegramApiConnector(host: String, port: Int)(implicit system: ActorSystem, materializer: ActorMaterializer) {
-  val flow = Http().cachedHostConnectionPool(host, port)
+  val flow = Http().cachedHostConnectionPool[Int](host, port)
 }
 
 object TelegramApiConnector {
