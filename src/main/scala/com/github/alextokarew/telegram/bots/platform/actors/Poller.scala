@@ -1,61 +1,74 @@
 package com.github.alextokarew.telegram.bots.platform.actors
 
-import akka.actor.{Actor, ActorRef, Props}
+import akka.actor.ActorSystem
 import akka.http.scaladsl.model.{HttpRequest, HttpResponse, StatusCodes}
 import akka.http.scaladsl.unmarshalling.Unmarshal
-import akka.stream.ActorMaterializer
-import akka.stream.scaladsl.{Sink, Source}
-import com.github.alextokarew.telegram.bots.domain.Protocol
+import akka.stream.scaladsl.{Broadcast, Flow, GraphDSL, Merge, Source}
+import akka.stream.{Materializer, SourceShape}
 import com.github.alextokarew.telegram.bots.domain.Protocol.Responses.{OkWrapper, Update}
 import com.github.alextokarew.telegram.bots.platform.TelegramApiConnector
 
-import scala.util.{Failure, Success}
-
-/**
-  * An actor that long-polls for updates via telegram's API getUpdates method.
-  */
-class Poller(url: String, timeout: Int, router: ActorRef, apiConnector: TelegramApiConnector) extends Actor with Protocol {
-  import Poller._
-  import akka.pattern.pipe
-  import context.dispatcher
-  implicit val materializer = ActorMaterializer()
-
-  @scala.throws[Exception](classOf[Exception])
-  override def preStart(): Unit = {
-    self ! Poll
-  }
-
-  def process(nextId: Long): Receive = {
-    case Poll =>
-      Source.single(HttpRequest(uri = s"$url/getUpdates?timeout=$timeout&offset=$nextId") -> 42)
-        .via(apiConnector.flow)
-        .map(_._1.get)
-        .runWith(Sink.head)
-        .pipeTo(self)
-
-    case HttpResponse(StatusCodes.OK, _, entity, _) =>
-      Unmarshal(entity).to[OkWrapper[Seq[Update]]].andThen {
-        case Success(wrapper) =>
-          wrapper.result.foreach(update => router ! update)
-          if (wrapper.result.nonEmpty) {
-            self ! LastUpdateId(wrapper.result.last.update_id)
-          }
-          self ! Poll
-
-        case Failure(e) => e.printStackTrace() //TODO - write to log
-      }
-
-    case LastUpdateId(id) =>
-      context.become(process(id + 1))
-  }
-
-  override def receive: Receive = process(0)
-}
+import scala.util.{Success, Try}
 
 object Poller {
-  def props(url: String, timeout: Int, router: ActorRef, apiConnector: TelegramApiConnector) =
-    Props(new Poller(url, timeout, router, apiConnector))
+  type Response = OkWrapper[Seq[Update]]
 
-  case object Poll
-  case class LastUpdateId(id: Long)
+  case class Poll(nextId: Long) extends TelegramApiConnector.RequestType
+
+  /**
+    * Creates a source that long-polls for updates via telegram's API getUpdates method and emits updates.
+    * @param url base telegram url
+    * @param timeout poll timeout in seconds
+    * @return Source[Update]
+    */
+  def updatesSource(
+    url: String,
+    timeout: Int,
+    apiConnector: TelegramApiConnector)(implicit s: ActorSystem, fm: Materializer) = {
+    import GraphDSL.Implicits._
+    import s._
+
+    Source.fromGraph {
+      GraphDSL.create() { implicit b =>
+        val init = Source.single(Poll(0))
+        val merge = b.add(Merge[Poll](2))
+        val request = b.add {
+          Flow[Poll].map { poll =>
+            HttpRequest(uri = s"$url/getUpdates?timeout=$timeout&offset=${poll.nextId}") -> poll
+          }
+        }
+        val http = b.add(apiConnector.flow[Poll])
+        val response = b.add {
+          //TODO: deal with failures and with bad http status codes, maybe write to log and go to the feedback loop
+          Flow[(Try[HttpResponse], Poll)].collect {
+            case (Success(HttpResponse(StatusCodes.OK, _, entity, _)), poll) => entity -> poll
+          }.mapAsync(1) {
+            case (entity, poll) => Unmarshal(entity).to[Response].map(_ -> poll)
+          }
+        }
+
+        val broadcast = b.add(Broadcast[(Response, Poll)](2))
+
+        val sequencer = b.add {
+          Flow[(Response, Poll)].mapConcat {
+            case (resp, _) => resp.result.toList
+          }
+        }
+
+        val feedback = b.add {
+          Flow[(Response, Poll)]
+            .map {
+              case (resp, poll) => if (resp.result.nonEmpty) Poll(resp.result.last.update_id + 1) else poll
+            }
+        }
+
+        // format: OFF
+        init ~> merge ~> request ~> http ~> response ~> broadcast ~> sequencer
+                merge <~ feedback                    <~ broadcast
+        // format: ON
+
+        SourceShape(sequencer.out)
+      }
+    }
+  }
 }
