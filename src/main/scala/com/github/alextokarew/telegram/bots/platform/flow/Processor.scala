@@ -1,4 +1,4 @@
-package com.github.alextokarew.telegram.bots.platform.actors
+package com.github.alextokarew.telegram.bots.platform.flow
 
 import akka.actor.{Actor, Props}
 import com.github.alextokarew.telegram.bots.domain.Protocol.Responses.{Chat, Message}

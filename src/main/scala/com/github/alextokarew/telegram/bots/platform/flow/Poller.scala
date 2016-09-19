@@ -1,19 +1,19 @@
-package com.github.alextokarew.telegram.bots.platform.actors
+package com.github.alextokarew.telegram.bots.platform.flow
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.model.{HttpRequest, HttpResponse, StatusCodes}
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.scaladsl.{Broadcast, Flow, GraphDSL, Merge, Source}
 import akka.stream.{Materializer, SourceShape}
+import com.github.alextokarew.telegram.bots.domain.Protocol
 import com.github.alextokarew.telegram.bots.domain.Protocol.Responses.{OkWrapper, Update}
-import com.github.alextokarew.telegram.bots.platform.TelegramApiConnector
 
 import scala.util.{Success, Try}
 
-object Poller {
+object Poller extends Protocol {
   type Response = OkWrapper[Seq[Update]]
 
-  case class Poll(nextId: Long) extends TelegramApiConnector.RequestType
+  case class Poll(nextId: Long) extends ApiConnector.RequestType
 
   /**
     * Creates a source that long-polls for updates via telegram's API getUpdates method and emits updates.
@@ -24,7 +24,7 @@ object Poller {
   def updatesSource(
     url: String,
     timeout: Int,
-    apiConnector: TelegramApiConnector)(implicit s: ActorSystem, fm: Materializer) = {
+    apiConnector: ApiConnector)(implicit s: ActorSystem, fm: Materializer) = {
     import GraphDSL.Implicits._
     import s._
 

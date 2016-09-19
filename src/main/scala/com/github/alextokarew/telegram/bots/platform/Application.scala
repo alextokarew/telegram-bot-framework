@@ -3,7 +3,7 @@ package com.github.alextokarew.telegram.bots.platform
 import akka.actor.{ActorSystem, Props}
 import akka.stream.ActorMaterializer
 import com.github.alextokarew.telegram.bots.domain.Protocol
-import com.github.alextokarew.telegram.bots.platform.actors.{Poller, Printer, Router}
+import com.github.alextokarew.telegram.bots.platform.flow.{Printer, Router, TelegramApiConnector}
 import com.typesafe.config.ConfigFactory
 
 /**
@@ -25,7 +25,7 @@ object Application extends App with Protocol {
 
   val printer = system.actorOf(Props[Printer])
   val router = system.actorOf(Router.props())
-  val poller = system.actorOf(Poller.props(url, timeout, router, apiConnector))
+// TODO: val poller = system.actorOf(Poller.props(url, timeout, router, apiConnector))
 
   sys.addShutdownHook {
     system.terminate()
